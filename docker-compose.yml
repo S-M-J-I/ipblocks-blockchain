@@ -1,0 +1,13 @@
+version: "1.0"
+
+services:
+  sol-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sol-container
+    ports:
+      - "8545:8545" # JSON-RPC port
+      - "7545:7545" # Ganache GUI port (emnei diye rakhsi)
+    volumes:
+      - .:/sol-container # Mount local directory for live updates
