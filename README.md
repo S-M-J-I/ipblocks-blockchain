@@ -1,4 +1,4 @@
-# Blockchain Repo of IPBlockchainPro
+# IPBlockchainPro Blockchain Repo
 
 ### Tech stack
 * **Solidity**
@@ -77,6 +77,6 @@ List of functions:
         +&&UpdatetTheIPItself (depends on the previous action)
     RevokeAnIP
         +&&UpdateTheIPItself (It's not longer valid now, it has expired, move current owner, to previous owner, update timestamps)
-    
+
 
 
