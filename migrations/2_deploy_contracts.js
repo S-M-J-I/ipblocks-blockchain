@@ -1,5 +1,5 @@
-const IPBlockchainProContract = artifacts.require("IPBlockchainProContract")
+const HelloWorldContract = artifacts.require("HelloWorldContract")
 
 module.exports = async function (deployer) {
-    await deployer.deploy(IPBlockchainProContract)
+    await deployer.deploy(HelloWorldContract)
 }

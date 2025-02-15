@@ -12,5 +12,4 @@ contract HelloWorldContract {
         word = newWord;
         return word;
     }
-    
 }

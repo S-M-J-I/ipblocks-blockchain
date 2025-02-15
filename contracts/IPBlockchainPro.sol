@@ -2,9 +2,12 @@
 pragma solidity ^0.8.8;
 
 contract IPBlockchainProContract {
-
     // Data Structures
-    enum IPType { Patent, Trademark, Copyright }
+    enum IPType {
+        Patent,
+        Trademark,
+        Copyright
+    }
 
     struct IP {
         IPType ipType;
@@ -94,7 +97,9 @@ contract IPBlockchainProContract {
     }
 
     // Search IP (Placeholder for word2vec/AI)
-    function searchIP(string memory searchTerm) public view returns (string[] memory) {
+    function searchIP(
+        string memory searchTerm
+    ) public view returns (string[] memory) {
         // TODO: Implement word2vec/AI search logic here
         // This is a placeholder, returning an empty array
         return new string[](0);
@@ -108,7 +113,10 @@ contract IPBlockchainProContract {
     // Transfer IP
     function transferIP(string memory ipId, address newOwner) public {
         require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
-        require(msg.sender == getIPOwner(ipId), "You are not the owner of this IP");
+        require(
+            msg.sender == getIPOwner(ipId),
+            "You are not the owner of this IP"
+        );
 
         // TakeTransferFee_FromSeller (set by the Government)
         // +&&TakeIPFee_FromBuyer (depends on the previous action, set by the previous owner)
@@ -128,11 +136,17 @@ contract IPBlockchainProContract {
         emit IPTransferred(ipId, msg.sender, newOwner);
     }
 
-    function removeIPFromUser(address user, string memory ipId) private returns (string[] memory) {
+    function removeIPFromUser(
+        address user,
+        string memory ipId
+    ) private returns (string[] memory) {
         string[] memory newIPList = new string[](userIPs[user].length - 1);
         uint index = 0;
         for (uint i = 0; i < userIPs[user].length; i++) {
-            if (keccak256(abi.encodePacked(userIPs[user][i])) != keccak256(abi.encodePacked(ipId))) {
+            if (
+                keccak256(abi.encodePacked(userIPs[user][i])) !=
+                keccak256(abi.encodePacked(ipId))
+            ) {
                 newIPList[index] = userIPs[user][i];
                 index++;
             }
@@ -153,7 +167,10 @@ contract IPBlockchainProContract {
     // Extend IP
     function extendIP(string memory ipId) public {
         require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
-        require(msg.sender == getIPOwner(ipId), "You are not the owner of this IP");
+        require(
+            msg.sender == getIPOwner(ipId),
+            "You are not the owner of this IP"
+        );
 
         // TakeExtensionFee_FromOwner (set by the Government)
         // Assume fees are handled off-chain for simplicity
@@ -181,7 +198,10 @@ contract IPBlockchainProContract {
             address user = userAddresses[i];
             string[] storage ipList = userIPs[user];
             for (uint j = 0; j < ipList.length; j++) {
-                if (keccak256(abi.encodePacked(ipList[j])) == keccak256(abi.encodePacked(ipId))) {
+                if (
+                    keccak256(abi.encodePacked(ipList[j])) ==
+                    keccak256(abi.encodePacked(ipId))
+                ) {
                     currentOwner = user;
                     return currentOwner;
                 }

@@ -2,6 +2,7 @@ version: "1.0"
 
 services:
   sol-container:
+    # network_mode: 'host'
     build:
       context: .
       dockerfile: Dockerfile
