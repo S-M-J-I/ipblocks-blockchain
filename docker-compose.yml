@@ -1,5 +1,9 @@
 version: "1.0"
 
+networks:
+  ipblockchainpro:
+    external: true
+
 services:
   sol-container:
     # network_mode: 'host'
@@ -12,3 +16,5 @@ services:
       - "7545:7545" # Ganache GUI port (emnei diye rakhsi)
     volumes:
       - .:/sol-container # Mount local directory for live updates
+    networks:
+      - ipblockchainpro
