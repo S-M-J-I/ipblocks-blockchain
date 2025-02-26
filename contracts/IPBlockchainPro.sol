@@ -12,6 +12,7 @@ contract IPBlockchainProContract {
     struct IP {
         IPType ipType;
         string id;
+        string title;
         uint initialFilingDate; // Stored as Unix timestamp
         uint publicationDate; // Stored as Unix timestamp
         uint lastRenewalDate; // Stored as Unix timestamp
@@ -19,7 +20,7 @@ contract IPBlockchainProContract {
         uint originalExpirationDate; // Stored as Unix timestamp
         uint adjustedExpirationDate; // Stored as Unix timestamp
         bool isRevoked;
-        ModificationFiling[] subsequentModificationFilings;
+        uint modificationCount;
         address[] previousOwners;
         address[] inventors;
     }
@@ -32,6 +33,7 @@ contract IPBlockchainProContract {
 
     // State variables
     mapping(string => IP) public IPs; // IPID to IP details
+    mapping(string => mapping(uint => ModificationFiling)) public modifications;
     mapping(address => string[]) public userIPs; // User address to list of IPIDs
     address public admin;
     address[] public userAddresses; // Track all user addresses
@@ -63,6 +65,7 @@ contract IPBlockchainProContract {
     // Publish IP
     function publishIP(
         string memory ipId,
+        string memory title,
         IPType ipType,
         uint initialFilingDate,
         uint publicationDate,
@@ -71,20 +74,16 @@ contract IPBlockchainProContract {
     ) public {
         require(IPs[ipId].originalExpirationDate == 0, "IP already exists");
 
-        IPs[ipId] = IP(
-            ipType,
-            ipId,
-            initialFilingDate,
-            publicationDate,
-            0,
-            0,
-            originalExpirationDate,
-            originalExpirationDate,
-            false,
-            new ModificationFiling[](0),
-            new address[](0),
-            _inventors
-        );
+        IP storage newIP = IPs[ipId];
+        newIP.ipType = ipType;
+        newIP.id = ipId;
+        newIP.title = title;
+        newIP.initialFilingDate = initialFilingDate;
+        newIP.publicationDate = publicationDate;
+        newIP.originalExpirationDate = originalExpirationDate;
+        newIP.adjustedExpirationDate = originalExpirationDate;
+        newIP.modificationCount = 0;
+        newIP.inventors = _inventors;
 
         // Add user to the list if not already present
         if (!isUserRegistered(msg.sender)) {
@@ -96,12 +95,37 @@ contract IPBlockchainProContract {
         emit IPPublished(ipId, ipType, msg.sender);
     }
 
+    function getIpById(string memory ipId) public view returns (string memory) {
+        return IPs[ipId].title;
+    }
+
+    function addModificationFiling(
+        string memory ipId,
+        uint dateRenewed,
+        uint dateTransferred,
+        uint dateRevoked
+    ) public {
+        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
+        require(
+            msg.sender == getIPOwner(ipId) || msg.sender == admin,
+            "Unauthorized"
+        );
+        uint idx = IPs[ipId].modificationCount;
+        modifications[ipId][idx] = ModificationFiling(
+            dateRenewed,
+            dateTransferred,
+            dateRevoked
+        );
+        IPs[ipId].modificationCount++;
+    }
+
     // Search IP (Placeholder for word2vec/AI)
     function searchIP(
         string memory searchTerm
-    ) public view returns (string[] memory) {
+    ) public pure returns (string[] memory) {
         // TODO: Implement word2vec/AI search logic here
         // This is a placeholder, returning an empty array
+        searchTerm;
         return new string[](0);
     }
 
@@ -139,7 +163,7 @@ contract IPBlockchainProContract {
     function removeIPFromUser(
         address user,
         string memory ipId
-    ) private returns (string[] memory) {
+    ) private view returns (string[] memory) {
         string[] memory newIPList = new string[](userIPs[user].length - 1);
         uint index = 0;
         for (uint i = 0; i < userIPs[user].length; i++) {
