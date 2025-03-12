@@ -23,6 +23,7 @@ contract IPBlockchainProContract {
         uint modificationCount;
         address[] previousOwners;
         address[] inventors;
+        uint256 price;
     }
 
     struct ModificationFiling {
@@ -47,6 +48,15 @@ contract IPBlockchainProContract {
     // Modifiers
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin can perform this action");
+        _;
+    }
+
+    modifier onlyOwner(string memory ipId) {
+        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
+        require(
+            msg.sender == getIPOwner(ipId),
+            "You are not the owner of this IP"
+        );
         _;
     }
 
@@ -84,6 +94,7 @@ contract IPBlockchainProContract {
         newIP.adjustedExpirationDate = originalExpirationDate;
         newIP.modificationCount = 0;
         newIP.inventors = _inventors;
+        newIP.price = 0 ether;
 
         // Add user to the list if not already present
         if (!isUserRegistered(msg.sender)) {
@@ -135,18 +146,35 @@ contract IPBlockchainProContract {
     }
 
     // Transfer IP
-    function transferIP(string memory ipId, address newOwner) public {
-        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
-        require(
-            msg.sender == getIPOwner(ipId),
-            "You are not the owner of this IP"
-        );
-
+    function transferIP(
+        string memory ipId,
+        address payable newOwner,
+        address payable governmentAddress
+    ) public payable onlyOwner(ipId) {
         // TakeTransferFee_FromSeller (set by the Government)
         // +&&TakeIPFee_FromBuyer (depends on the previous action, set by the previous owner)
         // Assume fees are handled off-chain for simplicity
 
+        uint256 priceToPay = IPs[ipId].price;
+        require(
+            msg.value >= priceToPay,
+            "Insufficient transaction funds for IP transfer"
+        );
+
+        // 20% platform fee to govt
+        uint256 governmentFee = (msg.value * 20) / 100;
+        require(governmentFee > 0, "Not enough govt fee");
+
+        // rest to seller
+        uint256 sellerPayment = msg.value - governmentFee;
+        require(sellerPayment > 0, "Not enough seller fee");
+
         IPs[ipId].previousOwners.push(getIPOwner(ipId));
+
+        // get prev owner
+        address payable previousOwnerAddress = payable(msg.sender);
+
+        // TODO: transfer newOwner ether to prevOwner and govt address. refund excess stuff
 
         // Update user lists
         userIPs[msg.sender] = removeIPFromUser(msg.sender, ipId);
