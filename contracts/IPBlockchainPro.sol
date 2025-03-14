@@ -282,4 +282,10 @@ contract IPBlockchainProContract {
     function addressSet() public view returns (address[] memory) {
         return userAddresses;
     }
+
+    function getIpPrice(
+        string memory ipId
+    ) public view returns (uint256 price) {
+        return IPs[ipId].price * 1 ether;
+    }
 }
