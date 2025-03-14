@@ -149,13 +149,15 @@ contract IPBlockchainProContract {
     function transferIP(
         string memory ipId,
         address payable governmentAddress
-    ) public payable onlyOwner(ipId) {
+    ) public payable {
         require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
         require(msg.sender.balance > msg.value, "Not enough balance in wallet");
 
         address payable ownerAddress = payable(getIPOwner(ipId));
-        require(msg.sender == ownerAddress, "Cannot transfer IP to yourself");
+        require(msg.sender != ownerAddress, "Cannot transfer IP to yourself");
 
+        // TakeTransferFee_FromSeller (set by the Government)
+        // +&&TakeIPFee_FromBuyer (depends on the previous action, set by the previous owner)
         uint256 priceToPay = IPs[ipId].price;
         require(
             msg.value >= priceToPay,
@@ -181,10 +183,11 @@ contract IPBlockchainProContract {
 
         IPs[ipId].previousOwners.push(ownerAddress);
 
-        // update user lists
+        // Update user lists
         userIPs[ownerAddress] = removeIPFromUser(ownerAddress, ipId);
         userIPs[msg.sender].push(ipId);
 
+        // Add new owner to the list if not already present
         if (!isUserRegistered(msg.sender)) {
             userAddresses.push(msg.sender);
         }
