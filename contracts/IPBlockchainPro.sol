@@ -148,12 +148,13 @@ contract IPBlockchainProContract {
     // Transfer IP
     function transferIP(
         string memory ipId,
-        address payable newOwner,
         address payable governmentAddress
     ) public payable onlyOwner(ipId) {
-        // TakeTransferFee_FromSeller (set by the Government)
-        // +&&TakeIPFee_FromBuyer (depends on the previous action, set by the previous owner)
-        // Assume fees are handled off-chain for simplicity
+        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
+        require(msg.sender.balance > msg.value, "Not enough balance in wallet");
+
+        address payable ownerAddress = payable(getIPOwner(ipId));
+        require(msg.sender == ownerAddress, "Cannot transfer IP to yourself");
 
         uint256 priceToPay = IPs[ipId].price;
         require(
@@ -162,30 +163,33 @@ contract IPBlockchainProContract {
         );
 
         // 20% platform fee to govt
-        uint256 governmentFee = (msg.value * 20) / 100;
+        uint256 governmentFee = (msg.value / 100) * 20;
         require(governmentFee > 0, "Not enough govt fee");
 
         // rest to seller
         uint256 sellerPayment = msg.value - governmentFee;
         require(sellerPayment > 0, "Not enough seller fee");
 
-        IPs[ipId].previousOwners.push(getIPOwner(ipId));
+        // send fees to government and previous owner
+        (bool sentToGovt, ) = governmentAddress.call{value: governmentFee}("");
+        require(sentToGovt, "Failed to send fee to government");
 
-        // get prev owner
-        address payable previousOwnerAddress = payable(msg.sender);
+        (bool sentToPreviousOwner, ) = ownerAddress.call{value: sellerPayment}(
+            ""
+        );
+        require(sentToPreviousOwner, "Failed to send fee to previous owner");
 
-        // TODO: transfer newOwner ether to prevOwner and govt address. refund excess stuff
+        IPs[ipId].previousOwners.push(ownerAddress);
 
-        // Update user lists
-        userIPs[msg.sender] = removeIPFromUser(msg.sender, ipId);
-        userIPs[newOwner].push(ipId);
+        // update user lists
+        userIPs[ownerAddress] = removeIPFromUser(ownerAddress, ipId);
+        userIPs[msg.sender].push(ipId);
 
-        // Add new owner to the list if not already present
-        if (!isUserRegistered(newOwner)) {
-            userAddresses.push(newOwner);
+        if (!isUserRegistered(msg.sender)) {
+            userAddresses.push(msg.sender);
         }
 
-        emit IPTransferred(ipId, msg.sender, newOwner);
+        emit IPTransferred(ipId, ownerAddress, msg.sender);
     }
 
     function removeIPFromUser(
