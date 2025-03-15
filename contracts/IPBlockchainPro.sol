@@ -9,6 +9,12 @@ contract IPBlockchainProContract {
         Copyright
     }
 
+    struct IPMetaData {
+        uint timesRenewed;
+        uint originalExpirationDate; // Stored as Unix timestamp
+        uint adjustedExpirationDate; // Stored as Unix timestamp
+    }
+
     struct IP {
         IPType ipType;
         string id;
@@ -16,14 +22,12 @@ contract IPBlockchainProContract {
         uint initialFilingDate; // Stored as Unix timestamp
         uint publicationDate; // Stored as Unix timestamp
         uint lastRenewalDate; // Stored as Unix timestamp
-        uint timesRenewed;
-        uint originalExpirationDate; // Stored as Unix timestamp
-        uint adjustedExpirationDate; // Stored as Unix timestamp
+        IPMetaData metadata;
         bool isRevoked;
-        uint modificationCount;
         address[] previousOwners;
         address[] inventors;
         uint256 price;
+        bool isAuction;
     }
 
     struct ModificationFiling {
@@ -41,7 +45,13 @@ contract IPBlockchainProContract {
 
     // Events
     event IPPublished(string ipId, IPType ipType, address owner);
-    event IPTransferred(string ipId, address from, address to);
+    event IPTransferred(
+        string ipId,
+        address from,
+        address to,
+        uint256 price,
+        uint256 govtFee
+    );
     event IPExtended(string ipId, uint newExpirationDate);
     event IPRevoked(string ipId);
 
@@ -52,7 +62,10 @@ contract IPBlockchainProContract {
     }
 
     modifier onlyOwner(string memory ipId) {
-        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
+        require(
+            IPs[ipId].metadata.originalExpirationDate != 0,
+            "IP does not exist"
+        );
         require(
             msg.sender == getIPOwner(ipId),
             "You are not the owner of this IP"
@@ -82,7 +95,10 @@ contract IPBlockchainProContract {
         uint originalExpirationDate,
         address[] memory _inventors
     ) public {
-        require(IPs[ipId].originalExpirationDate == 0, "IP already exists");
+        require(
+            IPs[ipId].metadata.originalExpirationDate == 0,
+            "IP already exists"
+        );
 
         IP storage newIP = IPs[ipId];
         newIP.ipType = ipType;
@@ -90,11 +106,12 @@ contract IPBlockchainProContract {
         newIP.title = title;
         newIP.initialFilingDate = initialFilingDate;
         newIP.publicationDate = publicationDate;
-        newIP.originalExpirationDate = originalExpirationDate;
-        newIP.adjustedExpirationDate = originalExpirationDate;
-        newIP.modificationCount = 0;
+        newIP.metadata.originalExpirationDate = originalExpirationDate;
+        newIP.metadata.adjustedExpirationDate = originalExpirationDate;
+        newIP.isAuction = false;
         newIP.inventors = _inventors;
         newIP.price = 0 ether;
+        // newIP.inAuction = false;
 
         // Add user to the list if not already present
         if (!isUserRegistered(msg.sender)) {
@@ -110,25 +127,25 @@ contract IPBlockchainProContract {
         return IPs[ipId].title;
     }
 
-    function addModificationFiling(
-        string memory ipId,
-        uint dateRenewed,
-        uint dateTransferred,
-        uint dateRevoked
-    ) public {
-        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
-        require(
-            msg.sender == getIPOwner(ipId) || msg.sender == admin,
-            "Unauthorized"
-        );
-        uint idx = IPs[ipId].modificationCount;
-        modifications[ipId][idx] = ModificationFiling(
-            dateRenewed,
-            dateTransferred,
-            dateRevoked
-        );
-        IPs[ipId].modificationCount++;
-    }
+    // function addModificationFiling(
+    //     string memory ipId,
+    //     uint dateRenewed,
+    //     uint dateTransferred,
+    //     uint dateRevoked
+    // ) public {
+    //     require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
+    //     require(
+    //         msg.sender == getIPOwner(ipId) || msg.sender == admin,
+    //         "Unauthorized"
+    //     );
+    //     uint idx = IPs[ipId].modificationCount;
+    //     modifications[ipId][idx] = ModificationFiling(
+    //         dateRenewed,
+    //         dateTransferred,
+    //         dateRevoked
+    //     );
+    //     IPs[ipId].modificationCount++;
+    // }
 
     // Search IP (Placeholder for word2vec/AI)
     function searchIP(
@@ -142,7 +159,8 @@ contract IPBlockchainProContract {
 
     // Verify IP
     function verifyIP(string memory ipId) public view returns (bool) {
-        return (IPs[ipId].originalExpirationDate != 0 && !IPs[ipId].isRevoked);
+        return (IPs[ipId].metadata.originalExpirationDate != 0 &&
+            !IPs[ipId].isRevoked);
     }
 
     // Transfer IP
@@ -150,7 +168,10 @@ contract IPBlockchainProContract {
         string memory ipId,
         address payable governmentAddress
     ) public payable {
-        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
+        require(
+            IPs[ipId].metadata.originalExpirationDate != 0,
+            "IP does not exist"
+        );
         require(msg.sender.balance > msg.value, "Not enough balance in wallet");
 
         address payable ownerAddress = payable(getIPOwner(ipId));
@@ -183,6 +204,10 @@ contract IPBlockchainProContract {
 
         IPs[ipId].previousOwners.push(ownerAddress);
 
+        // owner - 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+        // newOwner - 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+        // govtAddress - 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
+
         // Update user lists
         userIPs[ownerAddress] = removeIPFromUser(ownerAddress, ipId);
         userIPs[msg.sender].push(ipId);
@@ -192,7 +217,13 @@ contract IPBlockchainProContract {
             userAddresses.push(msg.sender);
         }
 
-        emit IPTransferred(ipId, ownerAddress, msg.sender);
+        emit IPTransferred(
+            ipId,
+            ownerAddress,
+            msg.sender,
+            priceToPay,
+            governmentFee
+        );
     }
 
     function removeIPFromUser(
@@ -214,18 +245,32 @@ contract IPBlockchainProContract {
     }
 
     // Start Auction IP (basic implementation)
-    function startAuctionIP(string memory ipId) public {
+    function startAuctionIP(
+        string memory ipId,
+        uint256 basePrice
+    ) public onlyOwner(ipId) {
         // TODO: Implement auction logic
+        // TODO: implement a variable to view auction logic
+        require(basePrice > 0, "Invalid base price: 0/negative");
+        require(!IPs[ipId].isAuction, "This IP is already in auction");
+
+        IPs[ipId].price = basePrice;
+        IPs[ipId].isAuction = true;
     }
 
     // End Auction IP (basic implementation)
     function endAuctionIP(string memory ipId) public {
         // TODO: Implement auction logic
+        require(IPs[ipId].isAuction, "This IP is not in auction");
+        IPs[ipId].isAuction = false;
     }
 
     // Extend IP
     function extendIP(string memory ipId) public {
-        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
+        require(
+            IPs[ipId].metadata.originalExpirationDate != 0,
+            "IP does not exist"
+        );
         require(
             msg.sender == getIPOwner(ipId),
             "You are not the owner of this IP"
@@ -235,15 +280,17 @@ contract IPBlockchainProContract {
         // Assume fees are handled off-chain for simplicity
 
         IPs[ipId].lastRenewalDate = block.timestamp;
-        IPs[ipId].adjustedExpirationDate = block.timestamp + 31536000; // Extend by one year
-        IPs[ipId].timesRenewed++;
+        IPs[ipId].metadata.adjustedExpirationDate = block.timestamp + 31536000; // Extend by one year
+        IPs[ipId].metadata.timesRenewed++;
 
-        emit IPExtended(ipId, IPs[ipId].adjustedExpirationDate);
+        emit IPExtended(ipId, IPs[ipId].metadata.adjustedExpirationDate);
     }
 
-    // Revoke IP
     function revokeIP(string memory ipId) public onlyAdmin {
-        require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
+        require(
+            IPs[ipId].metadata.originalExpirationDate != 0,
+            "IP does not exist"
+        );
 
         IPs[ipId].isRevoked = true;
 
