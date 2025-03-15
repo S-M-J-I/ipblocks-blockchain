@@ -99,6 +99,8 @@ contract IPBlockchainProContract {
             IPs[ipId].metadata.originalExpirationDate == 0,
             "IP already exists"
         );
+        require(!compareString(ipId, ""), "ID cannot be empty");
+        require(!compareString(title, ""), "Title cannot be empty");
 
         IP storage newIP = IPs[ipId];
         newIP.ipType = ipType;
@@ -334,5 +336,64 @@ contract IPBlockchainProContract {
         string memory ipId
     ) public view returns (uint256 price) {
         return IPs[ipId].price * 1 ether;
+    }
+
+    function compareString(
+        string memory a,
+        string memory b
+    ) private pure returns (bool) {
+        return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
+    }
+
+    function getAuctionedIPs()
+        public
+        view
+        returns (string[] memory, string[] memory, uint256[] memory)
+    {
+        uint auctionCount = 0;
+
+        // at first, try to get how many ips are in auction (isAuction = True)
+        for (uint i = 0; i < userAddresses.length; i++) {
+            address user = userAddresses[i];
+            string[] storage ipList = userIPs[user];
+
+            for (uint j = 0; j < ipList.length; j++) {
+                string memory ipId = ipList[j];
+                if (IPs[ipId].isAuction) {
+                    auctionCount++;
+                }
+            }
+        }
+
+        // we now need to create an array and store ipids that are auctioned
+        string[] memory auctionIPs = new string[](auctionCount);
+        uint idx = 0;
+        for (uint i = 0; i < userAddresses.length; i++) {
+            address user = userAddresses[i];
+            string[] storage ipList = userIPs[user];
+
+            for (uint j = 0; j < ipList.length; j++) {
+                string memory ipId = ipList[j];
+                if (IPs[ipId].isAuction) {
+                    auctionIPs[idx] = ipList[j];
+                    idx++;
+                }
+            }
+        }
+
+        // use the stored ips to save to displayed arrays
+        string[] memory ipIds = new string[](auctionIPs.length);
+        string[] memory titles = new string[](auctionIPs.length);
+        uint256[] memory prices = new uint256[](auctionIPs.length);
+
+        for (uint i = 0; i < auctionIPs.length; i++) {
+            string memory ipId = auctionIPs[i];
+            IP memory ip = IPs[ipId];
+            ipIds[i] = ipId;
+            titles[i] = ip.title;
+            prices[i] = ip.price;
+        }
+
+        return (ipIds, titles, prices);
     }
 }
