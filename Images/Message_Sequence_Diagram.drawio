@@ -1,0 +1,259 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.1.1">
+  <diagram id="u1uABCoCq5ljK1uK7-4K" name="Page-1">
+    <mxGraphModel dx="2468" dy="976" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="66WeXzP9bUq8A272CqZN-1" value="PatentOwner" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};participant=umlActor;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;align=center;size=65;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="35" height="1865" as="geometry" />
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-2" value="GovernmentAdmin" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};participant=umlActor;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;align=center;size=65;" vertex="1" parent="1">
+          <mxGeometry x="220" y="20" width="35" height="1865" as="geometry" />
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-3" value="IPBuyer" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};participant=umlActor;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;align=center;size=65;" vertex="1" parent="1">
+          <mxGeometry x="425" y="20" width="35" height="1865" as="geometry" />
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-4" value="WebUI" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="660" y="20" width="150" height="1865" as="geometry" />
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-5" value="SmartContract" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="860" y="20" width="150" height="1865" as="geometry" />
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-6" value="Blockchain" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="20" width="150" height="1865" as="geometry" />
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-7" value="Register as Admin" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-2" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="123" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-8" value="Validate Admin Credentials" style="curved=1;endArrow=block;rounded=0;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="786" y="171" />
+              <mxPoint x="786" y="201" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-9" value="Admin Account Created" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="528" y="249" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-10" value="Register as Patent Owner" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-1" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="424" y="297" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-11" value="Validate Owner Credentials" style="curved=1;endArrow=block;rounded=0;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="786" y="345" />
+              <mxPoint x="786" y="375" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-12" value="Owner Account Created" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="427" y="423" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-13" value="Submit IP Details" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-1" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="424" y="471" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-14" value="publishIP()" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="844" y="519" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-15" value="Store IP Data" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1049" y="567" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-16" value="IP Published Successfully" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="527" y="615" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-17" value="Browse IP Marketplace" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-3" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="626" y="663" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-18" value="Select IP to Purchase" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-3" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="626" y="711" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-19" value="Query IP Price" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="844" y="759" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-20" value="Return IP Price" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="847" y="807" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-21" value="Initiate Purchase" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-3" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="626" y="855" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-22" value="transferIP()" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="844" y="903" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-23" value="Process Transfer" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1049" y="951" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-24" value="Transfer Fees to Government" style="curved=1;endArrow=block;rounded=0;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="986" y="1048" />
+              <mxPoint x="986" y="1078" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-25" value="Transfer IP Ownership" style="curved=1;endArrow=block;rounded=0;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="986" y="1126" />
+              <mxPoint x="986" y="1156" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-26" value="Send 80% Payment" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="527" y="1204" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-27" value="Send 20% Fee" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="628" y="1252" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-28" value="Confirm Transfer" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="729" y="1300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-29" value="Review IP Status" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-2" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="1348" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-30" value="Initiate IP Revocation" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-2" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="1396" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-31" value="revokeIP()" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="844" y="1444" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-32" value="Update IP Status" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1049" y="1492" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-33" value="Notify Revocation" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="527" y="1540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-34" value="Confirm Revocation" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="628" y="1588" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-35" value="Request IP Extension" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-1" target="66WeXzP9bUq8A272CqZN-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="424" y="1636" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-36" value="extendIP()" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-4" target="66WeXzP9bUq8A272CqZN-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="844" y="1684" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-37" value="Update Expiry Date" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1049" y="1732" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-38" value="Confirm Extension" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="66WeXzP9bUq8A272CqZN-5" target="66WeXzP9bUq8A272CqZN-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="527" y="1780" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66WeXzP9bUq8A272CqZN-39" value="Calculate 20% Government Fee" style="fillColor=#ffff88;strokeColor=#9E916F;" vertex="1" parent="1">
+          <mxGeometry x="811" y="971" width="249" height="49" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
