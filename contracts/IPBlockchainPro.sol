@@ -16,8 +16,8 @@ contract IPBlockchainProContract {
     }
 
     struct IP {
-        IPType ipType;
         string id;
+        IPType ipType;
         string title;
         uint initialFilingDate; // Stored as Unix timestamp
         uint publicationDate; // Stored as Unix timestamp
@@ -40,8 +40,10 @@ contract IPBlockchainProContract {
     mapping(string => IP) public IPs; // IPID to IP details
     mapping(string => mapping(uint => ModificationFiling)) public modifications;
     mapping(address => string[]) public userIPs; // User address to list of IPIDs
+    mapping(string => address) public ipOwners;
     address public admin;
     address[] public userAddresses; // Track all user addresses
+    bool private _notEnteredTransferIP = true;
 
     // Events
     event IPPublished(string ipId, IPType ipType, address owner);
@@ -54,6 +56,8 @@ contract IPBlockchainProContract {
     );
     event IPExtended(string ipId, uint newExpirationDate);
     event IPRevoked(string ipId);
+    event IPAuctionStarted(string ipId, uint256 basePrice, address owner);
+    event IPAuctionEnded(string ipId, address owner);
 
     // Modifiers
     modifier onlyAdmin() {
@@ -71,6 +75,13 @@ contract IPBlockchainProContract {
             "You are not the owner of this IP"
         );
         _;
+    }
+
+    modifier nonReentrant() {
+        require(_notEnteredTransferIP, "Rentry guard");
+        _notEnteredTransferIP = false;
+        _;
+        _notEnteredTransferIP = true;
     }
 
     // Constructor
@@ -112,7 +123,7 @@ contract IPBlockchainProContract {
         newIP.metadata.adjustedExpirationDate = originalExpirationDate;
         newIP.isAuction = false;
         newIP.inventors = _inventors;
-        newIP.price = 0 ether;
+        newIP.price = 0;
         // newIP.inAuction = false;
 
         // Add user to the list if not already present
@@ -121,6 +132,7 @@ contract IPBlockchainProContract {
         }
 
         userIPs[msg.sender].push(ipId);
+        ipOwners[ipId] = msg.sender;
 
         emit IPPublished(ipId, ipType, msg.sender);
     }
@@ -165,15 +177,40 @@ contract IPBlockchainProContract {
             !IPs[ipId].isRevoked);
     }
 
+    function getIpDetailsById(
+        string memory ipId
+    )
+        public
+        view
+        returns (
+            string memory,
+            string memory title,
+            address owner,
+            uint256 price
+        )
+    {
+        require(!compareString(ipId, ""), "ID cannot be empty");
+        require(
+            IPs[ipId].metadata.originalExpirationDate != 0 &&
+                IPs[ipId].isRevoked == false,
+            "IP does not exist"
+        );
+        title = getIpById(ipId);
+
+        return (ipId, title, getIPOwner(ipId), IPs[ipId].price);
+    }
+
     // Transfer IP
     function transferIP(
         string memory ipId,
         address payable governmentAddress
-    ) public payable {
+    ) public payable nonReentrant {
+        // check
         require(
             IPs[ipId].metadata.originalExpirationDate != 0,
             "IP does not exist"
         );
+        require(IPs[ipId].isAuction, "IP not in auction");
         require(msg.sender.balance > msg.value, "Not enough balance in wallet");
 
         address payable ownerAddress = payable(getIPOwner(ipId));
@@ -187,6 +224,20 @@ contract IPBlockchainProContract {
             "Insufficient transaction funds for IP transfer"
         );
 
+        // effect
+        IPs[ipId].previousOwners.push(ownerAddress);
+
+        // Update user lists
+        userIPs[ownerAddress] = removeIPFromUser(ownerAddress, ipId);
+        userIPs[msg.sender].push(ipId);
+
+        // Add new owner to the list if not already present
+        if (!isUserRegistered(msg.sender)) {
+            userAddresses.push(msg.sender);
+        }
+        ipOwners[ipId] = msg.sender;
+
+        // interactions
         // 20% platform fee to govt
         uint256 governmentFee = (msg.value / 100) * 20;
         require(governmentFee > 0, "Not enough govt fee");
@@ -203,21 +254,6 @@ contract IPBlockchainProContract {
             ""
         );
         require(sentToPreviousOwner, "Failed to send fee to previous owner");
-
-        IPs[ipId].previousOwners.push(ownerAddress);
-
-        // owner - 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
-        // newOwner - 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
-        // govtAddress - 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
-
-        // Update user lists
-        userIPs[ownerAddress] = removeIPFromUser(ownerAddress, ipId);
-        userIPs[msg.sender].push(ipId);
-
-        // Add new owner to the list if not already present
-        if (!isUserRegistered(msg.sender)) {
-            userAddresses.push(msg.sender);
-        }
 
         emit IPTransferred(
             ipId,
@@ -246,25 +282,24 @@ contract IPBlockchainProContract {
         return newIPList;
     }
 
-    // Start Auction IP (basic implementation)
     function startAuctionIP(
         string memory ipId,
         uint256 basePrice
     ) public onlyOwner(ipId) {
-        // TODO: Implement auction logic
-        // TODO: implement a variable to view auction logic
         require(basePrice > 0, "Invalid base price: 0/negative");
         require(!IPs[ipId].isAuction, "This IP is already in auction");
 
         IPs[ipId].price = basePrice;
         IPs[ipId].isAuction = true;
+
+        emit IPAuctionStarted(ipId, basePrice, msg.sender);
     }
 
-    // End Auction IP (basic implementation)
-    function endAuctionIP(string memory ipId) public {
-        // TODO: Implement auction logic
+    function endAuctionIP(string memory ipId) public onlyOwner(ipId) {
         require(IPs[ipId].isAuction, "This IP is not in auction");
         IPs[ipId].isAuction = false;
+
+        emit IPAuctionEnded(ipId, msg.sender);
     }
 
     // Extend IP
@@ -301,21 +336,7 @@ contract IPBlockchainProContract {
 
     // Helper function to get the owner of an IP
     function getIPOwner(string memory ipId) public view returns (address) {
-        address currentOwner;
-        for (uint i = 0; i < userAddresses.length; i++) {
-            address user = userAddresses[i];
-            string[] storage ipList = userIPs[user];
-            for (uint j = 0; j < ipList.length; j++) {
-                if (
-                    keccak256(abi.encodePacked(ipList[j])) ==
-                    keccak256(abi.encodePacked(ipId))
-                ) {
-                    currentOwner = user;
-                    return currentOwner;
-                }
-            }
-        }
-        return address(0); // Return null address if not found
+        return ipOwners[ipId];
     }
 
     // Helper function to check if a user is already registered
@@ -335,7 +356,7 @@ contract IPBlockchainProContract {
     function getIpPrice(
         string memory ipId
     ) public view returns (uint256 price) {
-        return IPs[ipId].price * 1 ether;
+        return IPs[ipId].price;
     }
 
     function compareString(
