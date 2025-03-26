@@ -36,6 +36,14 @@ contract IPBlockchainProContract {
         uint dateRevoked; // Stored as Unix timestamp
     }
 
+    struct TransactionMetrics {
+        address sender;
+        uint256 initiationTimestamp;
+        uint256 completionTimestamp;
+        uint256 processingTime;
+        bool completed;
+    }
+
     // State variables
     mapping(string => IP) public IPs; // IPID to IP details
     mapping(string => mapping(uint => ModificationFiling)) public modifications;
@@ -44,6 +52,7 @@ contract IPBlockchainProContract {
     address public admin;
     address[] public userAddresses; // Track all user addresses
     bool private _notEnteredTransferIP = true;
+    mapping(bytes32 => TransactionMetrics) public transactionMetrics;
 
     // Events
     event IPPublished(string ipId, IPType ipType, address owner);
@@ -58,6 +67,13 @@ contract IPBlockchainProContract {
     event IPRevoked(string ipId);
     event IPAuctionStarted(string ipId, uint256 basePrice, address owner);
     event IPAuctionEnded(string ipId, address owner);
+    event TransactionPerformanceLogged(
+        bytes32 indexed transactionId,
+        address sender,
+        uint256 initiationTimestamp,
+        uint256 completionTimestamp,
+        uint256 processingTime
+    );
 
     // Modifiers
     modifier onlyAdmin() {
@@ -82,6 +98,35 @@ contract IPBlockchainProContract {
         _notEnteredTransferIP = false;
         _;
         _notEnteredTransferIP = true;
+    }
+
+    modifier measureTransactionTime() {
+        bytes32 transactionId = keccak256(
+            abi.encodePacked(msg.sender, block.timestamp)
+        );
+
+        // Store initial timestamp
+        transactionMetrics[transactionId].sender = msg.sender;
+        transactionMetrics[transactionId].initiationTimestamp = block.timestamp;
+
+        _;
+
+        // Store completion timestamp and calculate processing time
+        transactionMetrics[transactionId].completionTimestamp = block.timestamp;
+        transactionMetrics[transactionId].processingTime =
+            transactionMetrics[transactionId].completionTimestamp -
+            transactionMetrics[transactionId].initiationTimestamp;
+
+        transactionMetrics[transactionId].completed = true;
+
+        // Emit event with transaction performance details
+        emit TransactionPerformanceLogged(
+            transactionId,
+            transactionMetrics[transactionId].sender,
+            transactionMetrics[transactionId].initiationTimestamp,
+            transactionMetrics[transactionId].completionTimestamp,
+            transactionMetrics[transactionId].processingTime
+        );
     }
 
     // Constructor
@@ -110,8 +155,8 @@ contract IPBlockchainProContract {
             IPs[ipId].metadata.originalExpirationDate == 0,
             "IP already exists"
         );
-        require(!compareString(ipId, ""), "ID cannot be empty");
-        require(!compareString(title, ""), "Title cannot be empty");
+        require(bytes(ipId).length > 0, "ID cannot be empty");
+        require(bytes(title).length > 0, "Title cannot be empty");
 
         IP storage newIP = IPs[ipId];
         newIP.ipType = ipType;
@@ -127,14 +172,15 @@ contract IPBlockchainProContract {
         // newIP.inAuction = false;
 
         // Add user to the list if not already present
-        if (!isUserRegistered(msg.sender)) {
-            userAddresses.push(msg.sender);
+        address sender = msg.sender;
+        if (!isUserRegistered(sender)) {
+            userAddresses.push(sender);
         }
 
-        userIPs[msg.sender].push(ipId);
-        ipOwners[ipId] = msg.sender;
+        userIPs[sender].push(ipId);
+        ipOwners[ipId] = sender;
 
-        emit IPPublished(ipId, ipType, msg.sender);
+        emit IPPublished(ipId, ipType, sender);
     }
 
     function getIpById(string memory ipId) public view returns (string memory) {
@@ -416,5 +462,11 @@ contract IPBlockchainProContract {
         }
 
         return (ipIds, titles, prices);
+    }
+
+    function getTransactionMetrics(
+        bytes32 _transactionId
+    ) public view returns (TransactionMetrics memory) {
+        return transactionMetrics[_transactionId];
     }
 }
