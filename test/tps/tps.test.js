@@ -77,7 +77,7 @@ contract('IPBlockchainPro', (accounts) => {
         // Create multiple web3 instances
         const web3Instances = []
         for (let i = 0; i < config.numClients; i++) {
-            web3Instances.push(new web3.Web3('http://192.168.0.246:8545'))
+            web3Instances.push(new web3.Web3())
         }
 
         const contractInstance = await IPBlockchainPro.deployed()
