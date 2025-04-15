@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE 8545 8545
 
-CMD ["ganache", "--host", "0.0.0.0", "--deterministic"]
+CMD ["ganache", "--host", "0.0.0.0", "--accounts", "150", "--deterministic"]

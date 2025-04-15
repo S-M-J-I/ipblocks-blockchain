@@ -36,14 +36,6 @@ contract IPBlockchainProContract {
         uint dateRevoked; // Stored as Unix timestamp
     }
 
-    struct TransactionMetrics {
-        address sender;
-        uint256 initiationTimestamp;
-        uint256 completionTimestamp;
-        uint256 processingTime;
-        bool completed;
-    }
-
     // State variables
     mapping(string => IP) public IPs; // IPID to IP details
     mapping(string => mapping(uint => ModificationFiling)) public modifications;
@@ -52,7 +44,6 @@ contract IPBlockchainProContract {
     address public admin;
     address[] public userAddresses; // Track all user addresses
     bool private _notEnteredTransferIP = true;
-    mapping(bytes32 => TransactionMetrics) public transactionMetrics;
 
     // Events
     event IPPublished(string ipId, IPType ipType, address owner);
@@ -98,35 +89,6 @@ contract IPBlockchainProContract {
         _notEnteredTransferIP = false;
         _;
         _notEnteredTransferIP = true;
-    }
-
-    modifier measureTransactionTime() {
-        bytes32 transactionId = keccak256(
-            abi.encodePacked(msg.sender, block.timestamp)
-        );
-
-        // Store initial timestamp
-        transactionMetrics[transactionId].sender = msg.sender;
-        transactionMetrics[transactionId].initiationTimestamp = block.timestamp;
-
-        _;
-
-        // Store completion timestamp and calculate processing time
-        transactionMetrics[transactionId].completionTimestamp = block.timestamp;
-        transactionMetrics[transactionId].processingTime =
-            transactionMetrics[transactionId].completionTimestamp -
-            transactionMetrics[transactionId].initiationTimestamp;
-
-        transactionMetrics[transactionId].completed = true;
-
-        // Emit event with transaction performance details
-        emit TransactionPerformanceLogged(
-            transactionId,
-            transactionMetrics[transactionId].sender,
-            transactionMetrics[transactionId].initiationTimestamp,
-            transactionMetrics[transactionId].completionTimestamp,
-            transactionMetrics[transactionId].processingTime
-        );
     }
 
     // Constructor
@@ -462,11 +424,5 @@ contract IPBlockchainProContract {
         }
 
         return (ipIds, titles, prices);
-    }
-
-    function getTransactionMetrics(
-        bytes32 _transactionId
-    ) public view returns (TransactionMetrics memory) {
-        return transactionMetrics[_transactionId];
     }
 }

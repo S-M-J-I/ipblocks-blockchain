@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "async": "^3.2.6",
+    "moment": "^2.30.1",
     "web3": "^4.16.0"
   }
 }

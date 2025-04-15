@@ -1,3 +1,5 @@
 *build
 diagrams/
 *node_modules
+*results
+/test
