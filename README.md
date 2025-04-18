@@ -2,11 +2,7 @@
 
 ### How to run
 
-At first, clone the repository:
-```sh
-git clone https://github.com/S-M-J-I/ipblocks-blockchain.git
-```
-
+At first, clone the repository.
 Make sure [Docker](https://docs.docker.com/engine/install/) is installed.
 
 Next, simply run:
