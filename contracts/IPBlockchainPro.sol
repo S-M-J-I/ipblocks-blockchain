@@ -98,7 +98,6 @@ contract IPBlockchainProContract {
 
     // Functions
 
-    // MostRecentGasFee (Says how much it'll cost to file)
     function MostRecentGasFee() public view returns (uint) {
         return gasleft();
     }
