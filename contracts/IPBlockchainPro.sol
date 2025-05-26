@@ -27,6 +27,7 @@ contract IPBlockchainProContract {
         address[] previousOwners;
         address[] inventors;
         uint256 price;
+        string fileHash;
         bool isAuction;
     }
 
@@ -41,6 +42,7 @@ contract IPBlockchainProContract {
     mapping(string => mapping(uint => ModificationFiling)) public modifications;
     mapping(address => string[]) public userIPs; // User address to list of IPIDs
     mapping(string => address) public ipOwners;
+    mapping(string => address) public highestBidders;
     address public admin;
     address[] public userAddresses; // Track all user addresses
     bool private _notEnteredTransferIP = true;
@@ -57,6 +59,7 @@ contract IPBlockchainProContract {
     event IPExtended(string ipId, uint newExpirationDate);
     event IPRevoked(string ipId);
     event IPAuctionStarted(string ipId, uint256 basePrice, address owner);
+    event IPBid(string ipId, uint256 price, address bidder);
     event IPAuctionEnded(string ipId, address owner);
     event TransactionPerformanceLogged(
         bytes32 indexed transactionId,
@@ -102,7 +105,17 @@ contract IPBlockchainProContract {
         return gasleft();
     }
 
-    // Publish IP
+    /**
+     * @notice Publish an IP on-chain
+     * @param ipId The IP ID
+     * @param title The IP title
+     * @param ipType The IP type [0,1,2]
+     * @param initialFilingDate The initial filing date
+     * @param publicationDate The publication date
+     * @param originalExpirationDate The original expiration date
+     * @param fileHash The ipfs file hash
+     * @param _inventors The ip title
+     */
     function publishIP(
         string memory ipId,
         string memory title,
@@ -110,6 +123,7 @@ contract IPBlockchainProContract {
         uint initialFilingDate,
         uint publicationDate,
         uint originalExpirationDate,
+        string memory fileHash,
         address[] memory _inventors
     ) public {
         require(
@@ -130,9 +144,9 @@ contract IPBlockchainProContract {
         newIP.isAuction = false;
         newIP.inventors = _inventors;
         newIP.price = 0;
+        newIP.fileHash = fileHash;
         // newIP.inAuction = false;
 
-        // Add user to the list if not already present
         address sender = msg.sender;
         if (!isUserRegistered(sender)) {
             userAddresses.push(sender);
@@ -147,26 +161,6 @@ contract IPBlockchainProContract {
     function getIpById(string memory ipId) public view returns (string memory) {
         return IPs[ipId].title;
     }
-
-    // function addModificationFiling(
-    //     string memory ipId,
-    //     uint dateRenewed,
-    //     uint dateTransferred,
-    //     uint dateRevoked
-    // ) public {
-    //     require(IPs[ipId].originalExpirationDate != 0, "IP does not exist");
-    //     require(
-    //         msg.sender == getIPOwner(ipId) || msg.sender == admin,
-    //         "Unauthorized"
-    //     );
-    //     uint idx = IPs[ipId].modificationCount;
-    //     modifications[ipId][idx] = ModificationFiling(
-    //         dateRenewed,
-    //         dateTransferred,
-    //         dateRevoked
-    //     );
-    //     IPs[ipId].modificationCount++;
-    // }
 
     // Search IP (Placeholder for word2vec/AI)
     function searchIP(
@@ -207,7 +201,11 @@ contract IPBlockchainProContract {
         return (ipId, title, getIPOwner(ipId), IPs[ipId].price);
     }
 
-    // Transfer IP
+    /**
+     * @notice Returns the amount of tokens owned by account
+     * @param ipId The address to query the balance of
+     * @param governmentAddress The address to query the balance of
+     */
     function transferIP(
         string memory ipId,
         address payable governmentAddress
@@ -300,6 +298,14 @@ contract IPBlockchainProContract {
         IPs[ipId].isAuction = true;
 
         emit IPAuctionStarted(ipId, basePrice, msg.sender);
+    }
+
+    function setIpPrice(string memory ipId, uint256 newPrice) public {
+        require(IPs[ipId].isAuction, "This IP is not in auction");
+        IPs[ipId].price = newPrice;
+        highestBidders[ipId] = msg.sender;
+
+        emit IPBid(ipId, newPrice, msg.sender);
     }
 
     function endAuctionIP(string memory ipId) public onlyOwner(ipId) {
