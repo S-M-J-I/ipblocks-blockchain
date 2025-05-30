@@ -326,9 +326,6 @@ contract IPBlockchainProContract {
             "You are not the owner of this IP"
         );
 
-        // TakeExtensionFee_FromOwner (set by the Government)
-        // Assume fees are handled off-chain for simplicity
-
         IPs[ipId].lastRenewalDate = block.timestamp;
         IPs[ipId].metadata.adjustedExpirationDate = block.timestamp + 31536000; // Extend by one year
         IPs[ipId].metadata.timesRenewed++;
